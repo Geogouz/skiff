@@ -47,6 +47,8 @@ Skifflet is a Virtual Kubelet provider: it implements the pod lifecycle and the 
 
 Unknown pods or containers, and malformed requests, keep their normal 404 and 400 responses.
 
+Every one of these operations needs credentials, as with a kubelet with webhook authentication and authorization: a certificate from the cluster's client CA (the API server's, for what `kubectl` asks) or a token the API server confirms (metrics-server's), and then RBAC on the node's `nodes/proxy`, `nodes/stats` or `nodes/metrics`. Exec, attach and port forwarding need the verb `create`, also when they come as a GET, so read-only access to `nodes/proxy` runs nothing. Nobody is anonymous: the port is open to everyone who can reach the machine.
+
 **Lifecycle hooks** (`lifecycle.postStart`, `lifecycle.preStop` of application containers):
 
 | Field | Status | Result | Alternative | Test |
@@ -198,3 +200,4 @@ Rules that the code comments hold and the tests enforce: nothing publishes statu
 | `--disable-taint` | `false` | Whether to disable the default `virtual-kubelet.io/provider=skiff` taint |
 | `--certificate` | `$APISERVER_CERT_LOCATION` | Server TLS certificate for Kubelet HTTPS serving endpoint (logs/exec) |
 | `--key` | `$APISERVER_KEY_LOCATION` | Server TLS private key for Kubelet HTTPS serving endpoint (logs/exec) |
+| `--client-ca` | `$APISERVER_CLIENT_CA_LOCATION` | CA of the client certificates the Kubelet HTTPS endpoint accepts (required) |
